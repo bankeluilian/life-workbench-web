@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import "./globals.css";
+import { AppStoreProvider } from "./workbench/store";
 
 export async function generateMetadata(): Promise<Metadata> {
   const requestHeaders = await headers();
@@ -11,7 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const protocol =
     requestHeaders.get("x-forwarded-proto") ??
     (host.startsWith("localhost") ? "http" : "https");
-  const previewImage = `${protocol}://${host}/og.png`;
+  const previewImage = `${protocol}://${host}/og-v2.png`;
 
   return {
     title: "人生支线工作台",
@@ -34,7 +35,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="zh-CN">
-      <body>{children}</body>
+      <body><AppStoreProvider>{children}</AppStoreProvider></body>
     </html>
   );
 }
