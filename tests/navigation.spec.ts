@@ -6,6 +6,14 @@ test.beforeEach(async ({ page }) => {
   await page.reload();
 });
 
+test("every route includes AI learning advice", async ({ page }) => {
+  for (const path of ["/", "/branches", "/insights", "/profile", "/projects/cet4", "/learning/review"]) {
+    await page.goto(path);
+    await expect(page.locator(".ai-learning-advice")).toBeVisible();
+    await expect(page.locator(".ai-learning-advice p")).not.toBeEmpty();
+  }
+});
+
 test("底部导航可以切换全部一级页面", async ({ page }) => {
   await page.getByRole("button", { name: "支线" }).click();
   await expect(page).toHaveURL(/\/branches$/);

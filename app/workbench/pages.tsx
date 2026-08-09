@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useRef, useState } from "react";
+import { getDailyQuote } from "./content";
 import { toLocalDate } from "./defaults";
 import { useAppStore } from "./store";
 import type { Branch, BranchStatus, RecordKind, Task, TaskBucket, Tone } from "./types";
@@ -79,6 +80,7 @@ export function HomePage(actions: PageActions) {
   const sleep = state.sleepRecords.filter((record) => sameDay(record.recordedAt, today)).at(-1)?.durationMinutes ?? 0;
   const study = state.studyRecords.filter((record) => sameDay(record.recordedAt, today)).reduce((sum, record) => sum + record.durationMinutes, 0) + todayTasks.filter((task) => task.branchId === "learning").reduce((sum, task) => sum + task.actualMinutes, 0);
   const focus = state.focusSessions.filter((record) => sameDay(record.startedAt, today)).reduce((sum, record) => sum + record.durationSeconds, 0);
+  const dailyQuote = getDailyQuote(toLocalDate());
   const mainTask = todayTasks.find((task) => task.status === "todo") ?? todayTasks[0];
   const sleepTrend = lastSevenDays().map((day) => Math.round((state.sleepRecords.find((record) => sameDay(record.recordedAt, day))?.durationMinutes ?? 0) / 6) / 10);
   const modules = state.dashboard.order.filter((module) => !state.dashboard.hidden.includes(module));
@@ -91,7 +93,7 @@ export function HomePage(actions: PageActions) {
       {state.theme.characterVisible && <Art name="03-rabbit-with-mug.png" alt="捧着杯子的兔子" className="greeting-rabbit" />}
     </section>
 
-    {renderModule("quote", <Card className="quote-card"><span className="eyebrow">★ 今日一句</span><p>你未来的样子，<br />藏在你现在的选择里。</p>{state.theme.stickers && <Art name="09-tulip-daisy-cluster.png" alt="" />}</Card>)}
+    {renderModule("quote", <Card className="quote-card"><span className="eyebrow">★ 每日一句</span><p>{dailyQuote}</p>{state.theme.stickers && <Art name="09-tulip-daisy-cluster.png" alt="" />}</Card>)}
 
     {renderModule("overview", <section><SectionTitle icon="sparkles" title="今日概览" /><div className="overview-rings">
       <button type="button" onClick={() => actions.openRecord("exercise")}><ProgressRing value={exercise} goal={40} tone="green" label="运动" /><span>{exercise}/40 分钟</span></button>

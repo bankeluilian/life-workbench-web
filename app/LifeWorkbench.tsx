@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { getAiLearningAdvice } from "./workbench/content";
 import { useAppStore } from "./workbench/store";
 import type { RecordKind } from "./workbench/types";
-import { BottomNavigation, PageHeader } from "./workbench/ui";
+import { Art, BottomNavigation, Icon, PageHeader } from "./workbench/ui";
 import { DateDialog, FocusTimer, MenuDrawer, QuickRecordSheet } from "./workbench/overlays";
 import {
   BranchDetailPage,
@@ -97,12 +98,13 @@ export function LifeWorkbench() {
   })();
 
   const isMain = ["/", "/branches", "/insights", "/profile"].includes(pathname);
+  const aiAdvice = getAiLearningAdvice(pathname, state);
   const title = pathname.startsWith("/projects/") ? "项目计划" : pathname.startsWith("/branches/") ? "支线详情" : pathname.startsWith("/learning/notes/") ? "学习笔记" : titles[pathname] ?? "人生支线工作台";
   const dateLabel = (() => { const date = new Date(`${state.selectedDate}T12:00:00`); return `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")} 周${"日一二三四五六"[date.getDay()]}`; })();
 
   return <main className={`app-shell theme-${state.theme.theme} ${state.settings.reducedMotion ? "reduced-motion" : ""}`} style={{ "--atmosphere": `${state.theme.intensity}%` } as CSSProperties}>
     <PageHeader title={title} dateLabel={dateLabel} onMenu={isMain ? () => setMenuOpen(true) : undefined} onBack={isMain ? undefined : () => router.back()} onDate={() => setDateOpen(true)} />
-    <div className="page">{hydrated ? content : <div className="loading-state" role="status">正在打开工作台…</div>}</div>
+    <div className="page">{hydrated ? <>{content}<aside className="ai-learning-advice" aria-label="AI 学习建议"><div><span><Icon name="robot" tone="purple" size={23} />AI 学习建议 <em>✦</em></span><p>{aiAdvice}</p></div><Art name="07-rabbit-moon-mug.png" alt="陪伴学习的小兔" /></aside></> : <div className="loading-state" role="status">正在打开工作台…</div>}</div>
     {isMain && hydrated && <BottomNavigation path={pathname} navigate={navigate} openRecord={() => openRecord("sleep")} />}
     {menuOpen && <MenuDrawer close={() => setMenuOpen(false)} navigate={navigate} />}
     {dateOpen && <DateDialog close={() => setDateOpen(false)} notify={notify} />}

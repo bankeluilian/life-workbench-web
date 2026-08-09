@@ -10,6 +10,24 @@ test.beforeEach(async ({ page }) => {
   await page.reload();
 });
 
+test("generated background, daily quote, and AI advice are available", async ({ page }) => {
+  const initialQuote = await page.locator("#dailyQuote").textContent();
+  const background = await page.locator(".app").evaluate((element) => {
+    const style = getComputedStyle(element, "::before");
+    return { image: style.backgroundImage, opacity: style.opacity };
+  });
+
+  expect(background.image).toContain("life-workbench-bg-v1.webp");
+  expect(background.opacity).toBe("0.18");
+  await expect(page.locator("[data-ai-advice]")).toHaveCount(4);
+  await expect(page.locator('.page.active [data-ai-advice] p')).not.toBeEmpty();
+
+  await page.locator(".header .date").click();
+  await page.locator("#dateInput").fill("2026-08-10");
+  await page.locator("#saveDateButton").click();
+  await expect(page.locator("#dailyQuote")).toHaveText(initialQuote ?? "");
+});
+
 test("独立 HTML 顶部、菜单、日期与导航均可用", async ({ page }) => {
   await expect(page.getByText("9:41", { exact: true })).toHaveCount(0);
   await expect(page.locator("body")).not.toContainText("▮▮▮");
