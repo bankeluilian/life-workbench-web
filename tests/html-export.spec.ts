@@ -18,7 +18,7 @@ test("generated background, daily quote, and AI advice are available", async ({ 
   });
 
   expect(background.image).toContain("life-workbench-bg-v1.webp");
-  expect(background.opacity).toBe("0.18");
+  expect(background.opacity).toBe("0.32");
   await expect(page.locator("[data-ai-advice]")).toHaveCount(4);
   await expect(page.locator('.page.active [data-ai-advice] p')).not.toBeEmpty();
 
@@ -57,23 +57,25 @@ test("独立 HTML 任务、专注与四种快速记录可用", async ({ page }) 
   await page.getByLabel("运动时长（分钟）").fill("30");
   await page.getByRole("button", { name: /保存记录/ }).click();
   await expect(page.getByText("30/40 分钟", { exact: true })).toBeVisible();
+  await expect(page.locator('[data-ring="exercise"]')).toHaveCSS("background-image", /conic-gradient/);
 
   await page.getByRole("button", { name: "睡眠", exact: true }).first().click();
   await page.getByLabel("睡觉时间").fill("22:30");
   await page.getByLabel("起床时间").fill("06:30");
   await page.getByRole("button", { name: /保存记录/ }).click();
   await expect(page.getByText("8.0/8 小时", { exact: true })).toBeVisible();
+  expect(await page.locator('[data-chart="sleep"] polyline').first().getAttribute("points")).not.toBe("50,130 150,130 250,130 350,130 450,130 550,130 650,130");
 
   await page.getByRole("button", { name: "收支", exact: true }).first().click();
   await page.getByLabel("金额").fill("12.50");
   await page.getByLabel("类型").selectOption("income");
   await page.getByRole("button", { name: /保存记录/ }).click();
-  await expect(page.getByText("记录已保存", { exact: true })).toBeVisible();
+  await expect(page.getByText(/记录已保存，圆环与曲线图已同步/)).toBeVisible();
 
   await page.getByRole("button", { name: "想法", exact: true }).first().click();
   await page.getByLabel("记录灵感").fill("测试灵感");
   await page.getByRole("button", { name: /保存记录/ }).click();
-  await expect(page.getByText("记录已保存", { exact: true })).toBeVisible();
+  await expect(page.getByText(/记录已保存，圆环与曲线图已同步/)).toBeVisible();
 
   await page.locator("#focusButton").click();
   await expect(page.locator("#focusButton")).toHaveText("Ⅱ 暂停专注");
@@ -84,6 +86,8 @@ test("独立 HTML 任务、专注与四种快速记录可用", async ({ page }) 
   await page.reload();
   await expect(page.locator(".task").first()).toHaveClass(/done/);
   await expect(page.getByText("30/40 分钟", { exact: true })).toBeVisible();
+  await expect(page.locator("#recordSummary")).toContainText("已保存");
+  await expect(page.getByText("8.0/8 小时", { exact: true })).toBeVisible();
 });
 
 test("独立 HTML 支线快捷操作与个人页设置可用", async ({ page }) => {
