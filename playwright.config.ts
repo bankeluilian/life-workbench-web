@@ -9,14 +9,14 @@ export default defineConfig({
   workers: 1,
   reporter: [["list"]],
   use: {
-    baseURL: "http://127.0.0.1:4173",
+    baseURL: "http://localhost:4173",
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
   },
   projects: [{ name: "mobile-chrome", use: { ...devices["iPhone 13"], browserName: "chromium", channel: "chrome", viewport: { width: 390, height: 844 } } }],
   webServer: {
-    command: "npm run dev",
-    url: "http://127.0.0.1:4173",
+    command: "npm run dev -- --port 4173",
+    url: "http://localhost:4173",
     reuseExistingServer: true,
     timeout: 120_000,
   },
