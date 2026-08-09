@@ -111,7 +111,7 @@ export function Heatmap({ rows }: { rows: { label: string; tone: Tone; values: n
 export function PageHeader({ title = "人生支线工作台", dateLabel, onBack, onMenu, onDate, onMore }: { title?: string; dateLabel?: string; onBack?: () => void; onMenu?: () => void; onDate?: () => void; onMore?: () => void }) {
   return (
     <>
-      <div className="status-row"><span>9:41</span><span>▮▮▮　⌁　▰</span></div>
+      <div className="status-row"><span>9:41</span></div>
       <header className="app-header">
         <button className="round-button" type="button" onClick={onBack ?? onMenu} aria-label={onBack ? "返回" : "打开菜单"}><Icon name={onBack ? "back" : "menu"} size={24} /></button>
         <h1>{title} <em>✦</em></h1>
