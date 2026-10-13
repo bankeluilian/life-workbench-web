@@ -104,13 +104,17 @@ npm run start
 
 ## 独立 HTML 版本
 
-不安装 Node.js 也可以使用静态 HTML 版：
+不安装 Node.js 也可以使用静态 HTML 版。推荐直接打开完全独立的 [`html-export/人生支线工作台.html`](./html-export/人生支线工作台.html)，图片、样式和脚本已经内嵌，可单独移动。
+
+需要维护源代码时：
 
 1. 下载或克隆本仓库。
 2. 打开 [`html-export/index.html`](./html-export/index.html)。
-3. 保持 `index.html` 与同目录的 `assets` 文件夹一起移动。
+3. 保持 `index.html`、`workbench.css`、`workbench.js` 和同目录的 `assets` 文件夹一起移动。
 
-HTML 版包含首页、支线、洞察、个人中心、快速记录、任务打卡、专注计时、数据导出和清零功能，数据同样保存在浏览器本地。
+HTML 版包含首页、支线、学习成长、项目计划、洞察、个人中心、四类快速记录、任务增删改与拖放分组、笔记与词汇复习、可刷新恢复的专注计时，以及数据导出、恢复和确认清零。数据保存在浏览器本地，兼容旧版 HTML 备份。
+
+运行 `npm run build:html` 重新生成单文件，运行 `npm run test:html` 验证独立 HTML 的功能与手机布局。参考图分析与验收记录见 [`docs/redesign/设计分析与验收.md`](./docs/redesign/设计分析与验收.md)。
 
 ## 数据说明
 

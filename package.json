@@ -11,6 +11,8 @@
     "start": "vinext start",
     "test": "npm run build && node --test tests/rendered-html.test.mjs && playwright test",
     "test:e2e": "playwright test",
+    "test:html": "node --test tests/html-redesign.test.cjs",
+    "build:html": "node tests/build-standalone.mjs",
     "test:visual": "playwright test tests/visual.spec.ts",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate"
