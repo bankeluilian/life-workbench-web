@@ -241,6 +241,7 @@
   function timeText(ms) { const seconds = Math.floor(ms / 1000); return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`; }
   function updateFocus() {
     const session = state.focusSession, pill = $('#focusPill'); pill.hidden = !session || $('#focusOverlay').classList.contains('open');
+    $('.app').classList.toggle('has-focus', Boolean(session));
     if (!session) return;
     const task = state.tasks.find(t => t.id === session.taskId);
     $('#focusTitle').textContent = task?.title || '给自己一点专注时间'; $('#focusTime').textContent = timeText(elapsedMs());

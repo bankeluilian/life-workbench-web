@@ -279,3 +279,38 @@ test('新任务编号不会复用已经保存专注历史的旧任务', async ()
     assert.deepEqual(errors, []);
   } finally { await context.close(); }
 });
+test('支线标题、阶段、月度重点、插画和专注浮条不会重叠', async () => {
+  for (const width of [320, 375, 390, 430]) {
+    const { context, page, errors } = await fresh(width);
+    try {
+      await page.locator('[data-nav="branches"]').click();
+      const overlaps = await page.evaluate(() => {
+        const selectors = ['.branch-hero h2', '.branch-hero > p', '.streak', '.month-focus', '.branch-hero .hero-art'];
+        const rects = selectors.map(selector => ({ selector, rect: document.querySelector(selector).getBoundingClientRect() }));
+        const collisions = [];
+        for (let i = 0; i < rects.length; i++) for (let j = i + 1; j < rects.length; j++) {
+          const a = rects[i].rect, b = rects[j].rect;
+          if (Math.min(a.right, b.right) - Math.max(a.left, b.left) > 1 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 1) collisions.push([rects[i].selector, rects[j].selector]);
+        }
+        for (const head of document.querySelectorAll('.branch-head')) {
+          const copy = head.querySelector('p').getBoundingClientRect(), ring = head.querySelector('.ring').getBoundingClientRect();
+          if (copy.right > ring.left + 1) collisions.push(['支线说明', '进度圆环']);
+        }
+        return collisions;
+      });
+      assert.deepEqual(overlaps, [], `${width}px 支线各区域不应重叠`);
+      await page.locator('[data-nav="home"]').click();
+      await page.locator('#focusButton').click();
+      await page.locator('#pauseFocus').click();
+      await page.locator('#focusOverlay [data-close-overlay]').click();
+      await page.locator('[data-nav="branches"]').click();
+      await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
+      const gap = await page.evaluate(() => document.querySelector('#focusPill').getBoundingClientRect().top - document.querySelector('.paused-row').getBoundingClientRect().bottom);
+      assert.ok(gap >= 4, `${width}px 专注浮条不能遮住暂缓支线，实际间距 ${gap}px`);
+      const docked = await page.evaluate(() => { const nav = document.querySelector('.bottom').getBoundingClientRect(), pill = document.querySelector('#focusPill').getBoundingClientRect(); return pill.top >= nav.top && pill.bottom <= nav.bottom; });
+      assert.equal(docked, true, `${width}px 专注状态应停靠在导航区内`);
+      assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${width}px 不应横向溢出`);
+      assert.deepEqual(errors, []);
+    } finally { await context.close(); }
+  }
+});
